@@ -14,7 +14,7 @@ module.exports.createCard = (req, res) => {
     .then(card => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `${Object.values(err.errors).map((error) => error.message).join(', ')}` })
+        res.status(400).send({ message: err.message })
       } else {
         res.status(500).send({ message: 'Произошла ошибка' })
       }
@@ -31,8 +31,16 @@ module.exports.deleteCardById = (req, res) => {
         res.send({ data: card })
 
     })
-    .catch(() => { res.status(500).send({ message: 'Произошла ошибка' }) })
+    .catch((err) => {
+       if (err.name === 'CastError') {
+      res.status(400).send({ message: err.message })
+    } else {
+      console.log(err.name)
+      res.status(500).send({ message: 'Произошла ошибка' })
+    }
+})
 }
+
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
@@ -40,9 +48,15 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then(cards =>
-      res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }))
+    .then(card =>
+      res.send({ data: card }))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message })
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' })
+      }
+    })
 }
 
 module.exports.dislikeCard = (req, res) => {
@@ -51,7 +65,13 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then(cards =>
-      res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }))
+    .then(card =>
+      res.send({ data: card }))
+    .catch(() => {
+      if (err.name === 'CastError') {
+      res.status(400).send({ message: err.message })
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка' })
+    }
+})
 }

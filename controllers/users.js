@@ -15,7 +15,13 @@ module.exports.getUserById = (req, res) => {
       res.send({ data: user })
     })
 
-    .catch((err) => { res.status(500).send({ message: 'Произошла ошибка' }) })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message })
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' })
+      }
+    })
 }
 
 module.exports.createUser = (req, res) => {
@@ -24,7 +30,7 @@ module.exports.createUser = (req, res) => {
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `${Object.values(err.errors).map((error) => error.message).join(', ')}` })
+        res.status(400).send({ message: err.message })
       } else {
         res.status(500).send({ message: 'Произошла ошибка' })
       }
@@ -37,8 +43,8 @@ module.exports.updateUser = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true, upsert: true })
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `${Object.values(err.errors).map((error) => error.message).join(', ')}` })
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message })
       } else {
         res.status(500).send({ message: 'Произошла ошибка' })
       }
@@ -51,9 +57,9 @@ module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true, upsert: true })
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `${Object.values(err.errors).map((error) => error.message).join(', ')}` })
-      } else {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: err.message })
+            } else {
         res.status(500).send({ message: 'Произошла ошибка' })
       }
 
