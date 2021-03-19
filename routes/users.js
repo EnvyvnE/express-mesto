@@ -1,15 +1,12 @@
 const router = require('express').Router();
 
-router.get('/users/:id', doesUserExist);
+const { getUsers, getUserById, createUser, updateUser, updateAvatar } = require('../controllers/users');
 
-const router = require('express').Router();
-const User = require('../models/user');
-
-const { getUsers, createUser } = require('../controllers/users')
-router.get('/users', getUsers);
-router.get('/users/:userId', getUsers);
-
-router.post('/sers', createUser);
+router.get('/', getUsers);
+router.get('/:id', getUserById);
+router.post('/', createUser);
+router.patch('/me', updateUser);
+router.patch('/me/avatar', updateAvatar);
 
 module.exports = router;
 

@@ -25,12 +25,13 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      if (!user) {
+      if (!card) {
         return res.status(404).send({ message: 'Запрашиваемая карточка не найден' })
       }
-      res.send({ data: user })
+        res.send({ data: card })
+
     })
-    .catch((err) => { res.status(500).send({ message: 'Произошла ошибка' }) })
+    .catch(() => { res.status(500).send({ message: 'Произошла ошибка' }) })
 }
 
 module.exports.likeCard = (req, res) => {
