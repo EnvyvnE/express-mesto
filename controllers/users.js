@@ -41,9 +41,14 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true, upsert: true })
-    .then(user => res.send({ data: user }))
+    .then(user => {
+      if (!user) {
+        return res.status(404).send({ message: 'Запрашиваемая карточка не найден' })
+      }
+      res.send({ data: user })
+    })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(400).send({ message: err.message })
       } else {
         res.status(500).send({ message: 'Произошла ошибка' })
@@ -55,9 +60,14 @@ module.exports.updateUser = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true, upsert: true })
-    .then(user => res.send({ data: user }))
+    .then(user =>{
+      if (!user) {
+        return res.status(404).send({ message: 'Запрашиваемая карточка не найден' })
+      }
+      res.send({ data: user })
+    })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(400).send({ message: err.message })
             } else {
         res.status(500).send({ message: 'Произошла ошибка' })

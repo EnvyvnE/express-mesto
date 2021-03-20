@@ -35,7 +35,6 @@ module.exports.deleteCardById = (req, res) => {
        if (err.name === 'CastError') {
       res.status(400).send({ message: err.message })
     } else {
-      console.log(err.name)
       res.status(500).send({ message: 'Произошла ошибка' })
     }
 })
@@ -48,8 +47,12 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then(card =>
-      res.send({ data: card }))
+    .then(card =>{
+      if (!card) {
+        return res.status(404).send({ message: 'Запрашиваемая карточка не найден' })
+      }
+      res.send({ data: card })
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: err.message })
@@ -65,8 +68,12 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then(card =>
-      res.send({ data: card }))
+    .then(card =>{
+      if (!card) {
+        return res.status(404).send({ message: 'Запрашиваемая карточка не найден' })
+      }
+      res.send({ data: card })
+    })
     .catch(() => {
       if (err.name === 'CastError') {
       res.status(400).send({ message: err.message })
