@@ -1,7 +1,10 @@
+/* eslint-disable no-unused-vars */
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const router = require('./routes/index.js');
+const NotFoundError = require('./errors/not-found-error');
 
 const { PORT = 3000 } = process.env;
 
@@ -20,22 +23,22 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(router);
 
-router.use((req, res) => {
-  res.status(404).send({ message: `Ресурс по адресу ${req.path} не найден` });
+router.use((req) => {
+  throw new NotFoundError(`Ресурс по адресу ${req.path} не найден`);
 });
-
+app.use(errors());
 app.use((err, req, res, next) => {
-
   const { statusCode = 500, message } = err;
   res
     .status(statusCode)
     .send({
       message: statusCode === 500
         ? 'На сервере произошла ошибка'
-        : message
+        : message,
     });
 });
 
 app.listen(PORT, () => {
-  console.log('App start')
-})
+  // eslint-disable-next-line no-console
+  console.log('App start');
+});

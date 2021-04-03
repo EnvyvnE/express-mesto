@@ -1,6 +1,7 @@
+/* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = 'yandexpraktikum';
 
+const JWT_SECRET = 'yandexpraktikum';
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
